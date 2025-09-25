@@ -1,0 +1,18 @@
+name: SCA Scan
+on: [push, pull_request]
+jobs:
+  snyk-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Snyk SCA
+        uses: snyk/actions/maven@master
+        with:
+          args: --json-file-output=results-sca.json
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      - name: Upload SCA results
+        uses: actions/upload-artifact@v4
+        with:
+          name: sca-results
+          path: results-sca.json
