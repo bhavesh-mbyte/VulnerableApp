@@ -1,18 +1,25 @@
-name: SCA Scan
-on: [push, pull_request]
+name: Trivy SCA Scan
+ 
+on:
+  push:
+    branches: [ "master" ]
+ 
 jobs:
-  snyk-scan:
+  trivy-sca:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Run Snyk SCA
-        uses: snyk/actions/maven@master
+      - name: Checkout repo
+        uses: actions/checkout@v4
+ 
+      - name: Run Trivy SCA (dependencies)
+        uses: aquasecurity/trivy-action@0.20.0
         with:
-          args: --json-file-output=results-sca.json
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Upload SCA results
+          scan-type: fs
+          format: json
+          output: trivy-sca-report.json
+ 
+      - name: Upload Trivy SCA results
         uses: actions/upload-artifact@v4
         with:
-          name: sca-results
-          path: results-sca.json
+          name: trivy-sca-report
+          path: trivy-sca-report.json
